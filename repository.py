@@ -13,7 +13,6 @@ def load():
     with open(_db_path, 'r', encoding='utf-8') as f:
         json_str = f.read()
         notes = json.loads(json_str)
-        print(notes)
 
 
 def save():
