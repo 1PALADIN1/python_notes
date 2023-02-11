@@ -24,6 +24,11 @@ def parse_args() -> argparse.Namespace:
     del_parser = subparsers.add_parser('del', help='deletes note')
     del_parser.add_argument('-i', '--id', help='note id', type=int, required=True)
 
+    edit_parser = subparsers.add_parser('edit', help='edits note')
+    edit_parser.add_argument('-i', '--id', help='note id', type=int, required=True)
+    edit_parser.add_argument('-t', '--title', help='note title', type=str)
+    edit_parser.add_argument('-m', '--msg', help='note body', type=str)
+
     return main_parser.parse_args()
 
 
@@ -49,6 +54,12 @@ def run():
             view.show_message('Record successfully deleted!')
         else:
             view.show_message(f'Record with id:{args.id} not found...')
+    elif args.subparser_name == 'edit':
+        err_msg = model.edit(args.id, args.title, args.msg)
+        if err_msg:
+            view.show_message(err_msg)
+        else:
+            view.show_message('Record successfully changed!')
 
 
 if __name__ == '__main__':

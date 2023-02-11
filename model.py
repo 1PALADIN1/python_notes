@@ -53,3 +53,21 @@ def delete(note_id: int) -> bool:
         repository.save()
 
     return record_found
+
+
+def edit(note_id: int, title: Optional[str], message: Optional[str]) -> Optional[str]:
+    if not title and not message:
+        return 'Nothing to change (specify at least title or message)'
+
+    for note in repository.notes:
+        if note['id'] == note_id:
+            if title:
+                note['title'] = title
+
+            if message:
+                note['message'] = message
+
+            repository.save()
+            return None
+
+    return f'Record with id:{note_id} not found...'
