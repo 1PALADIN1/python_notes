@@ -2,7 +2,6 @@ from datetime import datetime
 
 import model
 import argparse
-import repository
 import view
 
 _date_format = '%d.%m.%Y'
@@ -22,9 +21,8 @@ def parse_args() -> argparse.Namespace:
     show_parser.add_argument('-i', '--id', help='note id', type=int)
     show_parser.add_argument('-d', '--date', help='filter date (format dd.mm.yyyy)', type=str)
 
-    # del_parser = subparsers.add_parser('del', help='deletes note')
-    # del_parser.add_argument('del', help='deletes note by specified id')
-    # del_parser.add_argument('-i', '--id', help='note id', type=str, required=True)
+    del_parser = subparsers.add_parser('del', help='deletes note')
+    del_parser.add_argument('-i', '--id', help='note id', type=int, required=True)
 
     return main_parser.parse_args()
 
@@ -32,20 +30,25 @@ def parse_args() -> argparse.Namespace:
 def run():
     args = parse_args()
 
-    repository.load()
+    model.init()
     if args.subparser_name == 'add':
         model.add(args.title, args.msg)
-        repository.save()
     elif args.subparser_name == 'show':
         if args.date:
             try:
                 datetime.strptime(args.date, _date_format)
             except ValueError:
-                print('Invalid date format (example: 20.05.1994)')
+                view.show_message('Invalid date format (example: 20.05.1994)')
                 return
 
         notes = model.get(args.id, args.date)
         view.show(notes)
+    elif args.subparser_name == 'del':
+        found = model.delete(args.id)
+        if found:
+            view.show_message('Record successfully deleted!')
+        else:
+            view.show_message(f'Record with id:{args.id} not found...')
 
 
 if __name__ == '__main__':
